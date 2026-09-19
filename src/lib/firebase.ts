@@ -23,6 +23,36 @@ import {
 } from 'firebase/firestore';
 import { getAnalytics, isSupported } from 'firebase/analytics';
 import { Complaint, OfficialAccount, ConsumerUser } from '../types';
+import { INITIAL_SEED_COMPLAINTS } from '../utils/storage';
+
+export const DEFAULT_SEED_OFFICIALS: OfficialAccount[] = [
+  {
+    id: 'OFF-7721',
+    officialId: 'OFF-7721',
+    govtEmail: 'vikram.mcd@gov.in',
+    name: 'Er. Vikram Malhotra',
+    designation: 'Zonal Chief Grievance Officer',
+    department: 'Municipal Public Works & Utilities Dept.',
+    badgeNumber: 'MCD-ENG-089',
+    jurisdiction: 'Zone 4 (Central & West Sectors)',
+    pin: '7721',
+    createdAt: new Date().toISOString(),
+    isActive: true,
+  },
+  {
+    id: 'OFF-101',
+    officialId: 'OFF-101',
+    govtEmail: 'alsheikhrehan922@gmail.com',
+    name: 'Sheikh Rehan (Admin Officer)',
+    designation: 'Senior Municipal Superintendent',
+    department: 'Municipal Administrative Office',
+    badgeNumber: 'MCD-SUP-101',
+    jurisdiction: 'Headquarters & All City Zones',
+    pin: '8969',
+    createdAt: new Date().toISOString(),
+    isActive: true,
+  },
+];
 
 // User provided Firebase configuration for ComplainX
 export const firebaseConfig = {
@@ -61,9 +91,23 @@ const LOCAL_OFFICIALS_KEY = 'complainx_real_officials';
 export function getLocalCachedComplaints(): Complaint[] {
   try {
     const raw = localStorage.getItem(LOCAL_COMPLAINTS_KEY);
-    return raw ? JSON.parse(raw) : [];
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+    // Fallback to initial realistic seed complaints so the app is never empty
+    const legacyRaw = localStorage.getItem('smart_community_complaints');
+    if (legacyRaw) {
+      const legacyParsed = JSON.parse(legacyRaw);
+      if (Array.isArray(legacyParsed) && legacyParsed.length > 0) {
+        return legacyParsed;
+      }
+    }
+    return INITIAL_SEED_COMPLAINTS;
   } catch {
-    return [];
+    return INITIAL_SEED_COMPLAINTS;
   }
 }
 
@@ -78,9 +122,15 @@ export function setLocalCachedComplaints(complaints: Complaint[]): void {
 export function getLocalCachedOfficials(): OfficialAccount[] {
   try {
     const raw = localStorage.getItem(LOCAL_OFFICIALS_KEY);
-    return raw ? JSON.parse(raw) : [];
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+    return DEFAULT_SEED_OFFICIALS;
   } catch {
-    return [];
+    return DEFAULT_SEED_OFFICIALS;
   }
 }
 

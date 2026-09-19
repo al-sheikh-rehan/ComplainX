@@ -152,7 +152,7 @@ export default function App() {
                 Official Authority Active:
               </span>
               <span>
-                Logged in as {authUser.name} ({authUser.department} • {authUser.designation}). Administrative privileges enabled.
+                Logged in as {authUser.name} ({authUser.department || 'Municipal Dept'} • {authUser.designation || 'Officer'}). Administrative privileges enabled.
               </span>
             </div>
             <div className="flex items-center gap-2 shrink-0">

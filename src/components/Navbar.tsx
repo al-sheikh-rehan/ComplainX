@@ -107,7 +107,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <User className="w-3.5 h-3.5" />
                     <span className="truncate max-w-[110px] sm:max-w-xs">{authUser.name}</span>
                     <span className="text-slate-400 font-mono text-[10px] hidden sm:inline">
-                      ({(authUser as ConsumerUser).consumerId})
+                      ({(authUser as ConsumerUser).consumerId || 'Citizen'})
                     </span>
                   </div>
                 ) : (
@@ -120,7 +120,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <ShieldCheck className="w-3.5 h-3.5 text-amber-400" />
                     <span className="truncate max-w-[110px] sm:max-w-xs">{authUser.name}</span>
                     <span className="px-1.5 py-0.2 rounded-sm bg-indigo-500/30 text-indigo-200 text-[10px] uppercase font-bold border border-indigo-400/30 hidden sm:inline">
-                      {(authUser as OfficialUser).department.split(' ')[0]}
+                      {((authUser as OfficialUser).department || 'Municipal').split(' ')[0]}
                     </span>
                   </button>
                 )}
@@ -350,8 +350,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <div className="font-semibold text-slate-900">{authUser.name}</div>
                   <div className="text-[11px] text-slate-500">
                     {authUser.role === 'consumer'
-                      ? `Consumer ID: ${(authUser as ConsumerUser).consumerId}`
-                      : `Official: ${(authUser as OfficialUser).designation}`}
+                      ? `Consumer ID: ${(authUser as ConsumerUser).consumerId || 'Citizen'}`
+                      : `Official: ${(authUser as OfficialUser).designation || 'Officer'}`}
                   </div>
                 </div>
               </div>

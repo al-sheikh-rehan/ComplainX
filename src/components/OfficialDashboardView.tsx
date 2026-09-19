@@ -89,13 +89,15 @@ export const OfficialDashboardView: React.FC<OfficialDashboardViewProps> = ({
   // Compute Metrics
   const metrics = useMemo(() => {
     const total = complaints.length;
-    const pending = complaints.filter((c) => c.status === 'Pending').length;
-    const inProgress = complaints.filter((c) => c.status === 'In Progress').length;
-    const resolved = complaints.filter((c) => c.status === 'Resolved').length;
-    const highPriority = complaints.filter((c) => c.priority === 'High' && c.status !== 'Resolved').length;
+    const pending = complaints.filter((c) => c?.status === 'Pending').length;
+    const inProgress = complaints.filter((c) => c?.status === 'In Progress').length;
+    const resolved = complaints.filter((c) => c?.status === 'Resolved').length;
+    const highPriority = complaints.filter((c) => c?.priority === 'High' && c?.status !== 'Resolved').length;
 
     // Unique Citizens
-    const citizenPhones = new Set(complaints.map((c) => c.phone.trim()).filter(Boolean));
+    const citizenPhones = new Set(
+      complaints.map((c) => (c?.phone ? String(c.phone).trim() : '')).filter(Boolean)
+    );
     const uniqueCitizensCount = citizenPhones.size;
 
     const resolutionRate = total > 0 ? Math.round((resolved / total) * 100) : 0;
@@ -125,15 +127,19 @@ export const OfficialDashboardView: React.FC<OfficialDashboardViewProps> = ({
     >();
 
     complaints.forEach((c) => {
-      const key = c.phone.trim() || c.email.trim() || c.name.trim();
+      if (!c) return;
+      const phone = c.phone ? String(c.phone).trim() : '';
+      const email = c.email ? String(c.email).trim() : '';
+      const name = c.name ? String(c.name).trim() : '';
+      const key = phone || email || name;
       if (!key) return;
 
       if (!map.has(key)) {
         map.set(key, {
-          name: c.name,
-          phone: c.phone,
-          email: c.email,
-          location: c.location,
+          name: c.name || 'Citizen Complainant',
+          phone: c.phone || 'N/A',
+          email: c.email || '',
+          location: c.location || 'Local Municipal Ward',
           complaints: [c],
         });
       } else {
@@ -153,18 +159,19 @@ export const OfficialDashboardView: React.FC<OfficialDashboardViewProps> = ({
   const filteredComplaints = useMemo(() => {
     return complaints
       .filter((c) => {
+        if (!c) return false;
         // Search term
-        const q = searchTerm.trim().toLowerCase();
+        const q = (searchTerm || '').trim().toLowerCase();
         const matchesSearch =
           !q ||
-          c.complaintId.toLowerCase().includes(q) ||
-          c.name.toLowerCase().includes(q) ||
-          c.phone.toLowerCase().includes(q) ||
-          c.email.toLowerCase().includes(q) ||
-          c.title.toLowerCase().includes(q) ||
-          c.description.toLowerCase().includes(q) ||
-          c.location.toLowerCase().includes(q) ||
-          (c.adminNotes && c.adminNotes.toLowerCase().includes(q));
+          (c.complaintId || '').toLowerCase().includes(q) ||
+          (c.name || '').toLowerCase().includes(q) ||
+          (c.phone || '').toLowerCase().includes(q) ||
+          (c.email || '').toLowerCase().includes(q) ||
+          (c.title || '').toLowerCase().includes(q) ||
+          (c.description || '').toLowerCase().includes(q) ||
+          (c.location || '').toLowerCase().includes(q) ||
+          Boolean(c.adminNotes && String(c.adminNotes).toLowerCase().includes(q));
 
         // Filters
         const matchesStatus = statusFilter === 'All' || c.status === statusFilter;
@@ -175,10 +182,10 @@ export const OfficialDashboardView: React.FC<OfficialDashboardViewProps> = ({
       })
       .sort((a, b) => {
         if (sortBy === 'newest') {
-          return new Date(b.date).getTime() - new Date(a.date).getTime();
+          return new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime();
         }
         if (sortBy === 'oldest') {
-          return new Date(a.date).getTime() - new Date(b.date).getTime();
+          return new Date(a.date || 0).getTime() - new Date(b.date || 0).getTime();
         }
         if (sortBy === 'priority') {
           const priorityScore = { High: 3, Medium: 2, Low: 1 };
@@ -190,14 +197,14 @@ export const OfficialDashboardView: React.FC<OfficialDashboardViewProps> = ({
 
   // Filtered Citizens in Directory
   const filteredCitizens = useMemo(() => {
-    const q = searchTerm.trim().toLowerCase();
+    const q = (searchTerm || '').trim().toLowerCase();
     if (!q) return citizenDirectory;
     return citizenDirectory.filter(
       (cit) =>
-        cit.name.toLowerCase().includes(q) ||
-        cit.phone.toLowerCase().includes(q) ||
-        cit.email.toLowerCase().includes(q) ||
-        cit.location.toLowerCase().includes(q)
+        (cit.name || '').toLowerCase().includes(q) ||
+        (cit.phone || '').toLowerCase().includes(q) ||
+        (cit.email || '').toLowerCase().includes(q) ||
+        (cit.location || '').toLowerCase().includes(q)
     );
   }, [citizenDirectory, searchTerm]);
 
