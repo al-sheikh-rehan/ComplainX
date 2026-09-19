@@ -179,8 +179,9 @@ export function subscribeToComplaints(
 
         // Sort latest first
         list.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-        setLocalCachedComplaints(list);
-        onUpdate(list);
+        const finalComplaints = list.length > 0 ? list : getLocalCachedComplaints();
+        setLocalCachedComplaints(finalComplaints);
+        onUpdate(finalComplaints);
       },
       (err) => {
         console.warn('Firestore complaints live sync error, using local storage cache:', err);

@@ -14,11 +14,12 @@ import {
 } from 'lucide-react';
 import { ComplaintCategory, ComplaintPriority, ComplaintStatus } from '../types';
 
-export const CategoryBadge: React.FC<{ category: ComplaintCategory; size?: 'sm' | 'md' }> = ({
+export const CategoryBadge: React.FC<{ category?: ComplaintCategory | string; size?: 'sm' | 'md' }> = ({
   category,
   size = 'md',
 }) => {
-  const getDetails = (cat: ComplaintCategory) => {
+  const safeCategory = category || 'Other';
+  const getDetails = (cat: string) => {
     switch (cat) {
       case 'Water':
         return {
@@ -54,7 +55,7 @@ export const CategoryBadge: React.FC<{ category: ComplaintCategory; size?: 'sm' 
     }
   };
 
-  const { icon: Icon, bg } = getDetails(category);
+  const { icon: Icon, bg } = getDetails(safeCategory);
   const sizeClasses = size === 'sm' ? 'px-2 py-0.5 text-xs' : 'px-2.5 py-1 text-xs sm:text-sm';
 
   return (
@@ -62,23 +63,18 @@ export const CategoryBadge: React.FC<{ category: ComplaintCategory; size?: 'sm' 
       className={`inline-flex items-center gap-1.5 font-medium rounded-full border ${bg} ${sizeClasses}`}
     >
       <Icon className={size === 'sm' ? 'w-3 h-3' : 'w-3.5 h-3.5'} />
-      <span>{category}</span>
+      <span>{safeCategory}</span>
     </span>
   );
 };
 
-export const StatusBadge: React.FC<{ status: ComplaintStatus; size?: 'sm' | 'md' }> = ({
+export const StatusBadge: React.FC<{ status?: ComplaintStatus | string; size?: 'sm' | 'md' }> = ({
   status,
   size = 'md',
 }) => {
-  const getDetails = (st: ComplaintStatus) => {
+  const safeStatus = status || 'Pending';
+  const getDetails = (st: string) => {
     switch (st) {
-      case 'Pending':
-        return {
-          icon: Clock,
-          bg: 'bg-amber-50 text-amber-800 border-amber-200',
-          dot: 'bg-amber-500',
-        };
       case 'In Progress':
         return {
           icon: Wrench,
@@ -91,10 +87,17 @@ export const StatusBadge: React.FC<{ status: ComplaintStatus; size?: 'sm' | 'md'
           bg: 'bg-emerald-50 text-emerald-800 border-emerald-200',
           dot: 'bg-emerald-500',
         };
+      case 'Pending':
+      default:
+        return {
+          icon: Clock,
+          bg: 'bg-amber-50 text-amber-800 border-amber-200',
+          dot: 'bg-amber-500',
+        };
     }
   };
 
-  const { icon: Icon, bg, dot } = getDetails(status);
+  const { icon: Icon, bg, dot } = getDetails(safeStatus);
   const sizeClasses = size === 'sm' ? 'px-2 py-0.5 text-xs' : 'px-2.5 py-1 text-xs sm:text-sm';
 
   return (
@@ -103,37 +106,38 @@ export const StatusBadge: React.FC<{ status: ComplaintStatus; size?: 'sm' | 'md'
     >
       <span className={`w-1.5 h-1.5 rounded-full ${dot} animate-pulse`} />
       <Icon className={size === 'sm' ? 'w-3 h-3' : 'w-3.5 h-3.5'} />
-      <span>{status}</span>
+      <span>{safeStatus}</span>
     </span>
   );
 };
 
-export const PriorityBadge: React.FC<{ priority: ComplaintPriority; size?: 'sm' | 'md' }> = ({
+export const PriorityBadge: React.FC<{ priority?: ComplaintPriority | string; size?: 'sm' | 'md' }> = ({
   priority,
   size = 'md',
 }) => {
-  const getDetails = (pr: ComplaintPriority) => {
+  const safePriority = priority || 'Medium';
+  const getDetails = (pr: string) => {
     switch (pr) {
       case 'High':
         return {
           icon: Flame,
           bg: 'bg-rose-50 text-rose-700 border-rose-200',
         };
-      case 'Medium':
-        return {
-          icon: AlertTriangle,
-          bg: 'bg-amber-50 text-amber-700 border-amber-200',
-        };
       case 'Low':
-      default:
         return {
           icon: CheckCircle2,
           bg: 'bg-slate-100 text-slate-700 border-slate-200',
         };
+      case 'Medium':
+      default:
+        return {
+          icon: AlertTriangle,
+          bg: 'bg-amber-50 text-amber-700 border-amber-200',
+        };
     }
   };
 
-  const { icon: Icon, bg } = getDetails(priority);
+  const { icon: Icon, bg } = getDetails(safePriority);
   const sizeClasses = size === 'sm' ? 'px-2 py-0.5 text-xs' : 'px-2 py-0.5 text-xs';
 
   return (
@@ -141,7 +145,7 @@ export const PriorityBadge: React.FC<{ priority: ComplaintPriority; size?: 'sm' 
       className={`inline-flex items-center gap-1 font-medium rounded-full border ${bg} ${sizeClasses}`}
     >
       <Icon className={size === 'sm' ? 'w-3 h-3' : 'w-3 h-3'} />
-      <span>{priority} Priority</span>
+      <span>{safePriority} Priority</span>
     </span>
   );
 };

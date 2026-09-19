@@ -30,14 +30,17 @@ interface HomeViewProps {
 }
 
 export const HomeView: React.FC<HomeViewProps> = ({
-  complaints,
+  complaints = [],
   onNavigate,
   onSelectComplaintToTrack,
   onPreselectCategory,
   authUser,
   onOpenAuth,
 }) => {
-  const recentComplaints = complaints.slice(0, 4);
+  const validComplaints = Array.isArray(complaints)
+    ? complaints.filter((c): c is Complaint => Boolean(c && typeof c === 'object' && c.complaintId))
+    : [];
+  const recentComplaints = validComplaints.slice(0, 4);
 
   const categories: { name: ComplaintCategory; icon: React.ElementType; color: string; desc: string }[] = [
     { name: 'Water', icon: Droplets, color: 'text-sky-600 bg-sky-50 border-sky-200', desc: 'Leaks, low pressure, contamination' },
@@ -189,7 +192,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               </button>
             </div>
             <DashboardStats
-              complaints={complaints}
+              complaints={validComplaints}
               onFilterClick={() => onNavigate('complaints')}
             />
           </div>
@@ -286,7 +289,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
             onClick={() => onNavigate('complaints')}
             className="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-800"
           >
-            <span>Browse All ({complaints.length})</span>
+            <span>Browse All ({validComplaints.length})</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>

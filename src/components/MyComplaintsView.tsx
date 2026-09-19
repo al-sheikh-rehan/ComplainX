@@ -49,16 +49,18 @@ export const MyComplaintsView: React.FC<MyComplaintsViewProps> = ({
   ];
 
   const filteredComplaints = useMemo(() => {
-    return complaints.filter((c) => {
+    return (complaints || []).filter((c) => {
+      if (!c || typeof c !== 'object') return false;
+
       // Search term match
-      const q = searchTerm.trim().toLowerCase();
+      const q = (searchTerm || '').trim().toLowerCase();
       const matchesSearch =
         !q ||
-        c.complaintId.toLowerCase().includes(q) ||
-        c.title.toLowerCase().includes(q) ||
-        c.description.toLowerCase().includes(q) ||
-        c.location.toLowerCase().includes(q) ||
-        c.name.toLowerCase().includes(q);
+        (c.complaintId || '').toLowerCase().includes(q) ||
+        (c.title || '').toLowerCase().includes(q) ||
+        (c.description || '').toLowerCase().includes(q) ||
+        (c.location || '').toLowerCase().includes(q) ||
+        (c.name || '').toLowerCase().includes(q);
 
       // Status match
       const matchesStatus = statusFilter === 'All' || c.status === statusFilter;

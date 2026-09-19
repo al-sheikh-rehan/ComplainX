@@ -9,14 +9,18 @@ interface DashboardStatsProps {
 }
 
 export const DashboardStats: React.FC<DashboardStatsProps> = ({
-  complaints,
+  complaints = [],
   onFilterClick,
   activeStatusFilter,
 }) => {
-  const total = complaints.length;
-  const pending = complaints.filter((c) => c.status === 'Pending').length;
-  const inProgress = complaints.filter((c) => c.status === 'In Progress').length;
-  const resolved = complaints.filter((c) => c.status === 'Resolved').length;
+  const validComplaints = Array.isArray(complaints)
+    ? complaints.filter((c): c is Complaint => Boolean(c && typeof c === 'object'))
+    : [];
+
+  const total = validComplaints.length;
+  const pending = validComplaints.filter((c) => c.status === 'Pending').length;
+  const inProgress = validComplaints.filter((c) => c.status === 'In Progress').length;
+  const resolved = validComplaints.filter((c) => c.status === 'Resolved').length;
 
   const stats = [
     {

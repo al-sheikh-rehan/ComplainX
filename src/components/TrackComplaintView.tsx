@@ -45,8 +45,8 @@ export const TrackComplaintView: React.FC<TrackComplaintViewProps> = ({
 
     setSearchedId(term);
     setHasSearched(true);
-    const liveMatch = allComplaints.find(
-      (c) => c.complaintId.toUpperCase() === term.toUpperCase()
+    const liveMatch = (allComplaints || []).find(
+      (c) => c && c.complaintId && c.complaintId.toUpperCase() === term.toUpperCase()
     );
     const result = liveMatch || findComplaintById(term);
     setFoundComplaint(result || null);
@@ -62,8 +62,8 @@ export const TrackComplaintView: React.FC<TrackComplaintViewProps> = ({
   // If live complaints list updates, refresh foundComplaint
   useEffect(() => {
     if (searchedId) {
-      const liveMatch = allComplaints.find(
-        (c) => c.complaintId.toUpperCase() === searchedId.toUpperCase()
+      const liveMatch = (allComplaints || []).find(
+        (c) => c && c.complaintId && c.complaintId.toUpperCase() === searchedId.toUpperCase()
       );
       if (liveMatch) {
         setFoundComplaint(liveMatch);
