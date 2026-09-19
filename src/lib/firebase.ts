@@ -24,6 +24,7 @@ import {
 import { getAnalytics, isSupported } from 'firebase/analytics';
 import { Complaint, OfficialAccount, ConsumerUser } from '../types';
 import { INITIAL_SEED_COMPLAINTS } from '../utils/storage';
+import { safeLocalStorage } from '../utils/safeStorage';
 
 export const DEFAULT_SEED_OFFICIALS: OfficialAccount[] = [
   {
@@ -90,7 +91,7 @@ const LOCAL_OFFICIALS_KEY = 'complainx_real_officials';
 // Helper to get local cache
 export function getLocalCachedComplaints(): Complaint[] {
   try {
-    const raw = localStorage.getItem(LOCAL_COMPLAINTS_KEY);
+    const raw = safeLocalStorage.getItem(LOCAL_COMPLAINTS_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed) && parsed.length > 0) {
@@ -98,7 +99,7 @@ export function getLocalCachedComplaints(): Complaint[] {
       }
     }
     // Fallback to initial realistic seed complaints so the app is never empty
-    const legacyRaw = localStorage.getItem('smart_community_complaints');
+    const legacyRaw = safeLocalStorage.getItem('smart_community_complaints');
     if (legacyRaw) {
       const legacyParsed = JSON.parse(legacyRaw);
       if (Array.isArray(legacyParsed) && legacyParsed.length > 0) {
@@ -113,7 +114,7 @@ export function getLocalCachedComplaints(): Complaint[] {
 
 export function setLocalCachedComplaints(complaints: Complaint[]): void {
   try {
-    localStorage.setItem(LOCAL_COMPLAINTS_KEY, JSON.stringify(complaints));
+    safeLocalStorage.setItem(LOCAL_COMPLAINTS_KEY, JSON.stringify(complaints));
   } catch (e) {
     console.error('Failed to cache complaints locally:', e);
   }
@@ -121,7 +122,7 @@ export function setLocalCachedComplaints(complaints: Complaint[]): void {
 
 export function getLocalCachedOfficials(): OfficialAccount[] {
   try {
-    const raw = localStorage.getItem(LOCAL_OFFICIALS_KEY);
+    const raw = safeLocalStorage.getItem(LOCAL_OFFICIALS_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed) && parsed.length > 0) {
@@ -136,7 +137,7 @@ export function getLocalCachedOfficials(): OfficialAccount[] {
 
 export function setLocalCachedOfficials(officials: OfficialAccount[]): void {
   try {
-    localStorage.setItem(LOCAL_OFFICIALS_KEY, JSON.stringify(officials));
+    safeLocalStorage.setItem(LOCAL_OFFICIALS_KEY, JSON.stringify(officials));
   } catch (e) {
     console.error('Failed to cache officials locally:', e);
   }

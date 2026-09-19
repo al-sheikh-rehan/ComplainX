@@ -6,6 +6,7 @@ import {
   ConsumerUser,
   OfficialUser,
 } from '../types';
+import { safeLocalStorage } from './safeStorage';
 
 const STORAGE_KEY = 'smart_community_complaints';
 const AUTH_USER_KEY = 'complainx_auth_user';
@@ -32,7 +33,7 @@ export const DEMO_OFFICIAL_USER: OfficialUser = {
 
 export function getStoredAuthUser(): AuthUser | null {
   try {
-    const raw = localStorage.getItem(AUTH_USER_KEY);
+    const raw = safeLocalStorage.getItem(AUTH_USER_KEY);
     if (!raw) return null;
     return JSON.parse(raw) as AuthUser;
   } catch (e) {
@@ -44,9 +45,9 @@ export function getStoredAuthUser(): AuthUser | null {
 export function setStoredAuthUser(user: AuthUser | null): void {
   try {
     if (user) {
-      localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+      safeLocalStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
     } else {
-      localStorage.removeItem(AUTH_USER_KEY);
+      safeLocalStorage.removeItem(AUTH_USER_KEY);
     }
   } catch (e) {
     console.error('Failed to save auth user to storage', e);
@@ -130,27 +131,25 @@ export const INITIAL_SEED_COMPLAINTS: Complaint[] = [
 ];
 
 export function getStoredComplaints(): Complaint[] {
-  if (typeof window === 'undefined') return [];
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = safeLocalStorage.getItem(STORAGE_KEY);
     if (!raw) {
       // Seed with initial realistic data if empty
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_SEED_COMPLAINTS));
+      safeLocalStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_SEED_COMPLAINTS));
       return INITIAL_SEED_COMPLAINTS;
     }
     return JSON.parse(raw);
   } catch (err) {
-    console.error('Failed to read complaints from localStorage:', err);
+    console.error('Failed to read complaints from storage:', err);
     return INITIAL_SEED_COMPLAINTS;
   }
 }
 
 export function saveStoredComplaints(complaints: Complaint[]): void {
-  if (typeof window === 'undefined') return;
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(complaints));
+    safeLocalStorage.setItem(STORAGE_KEY, JSON.stringify(complaints));
   } catch (err) {
-    console.error('Failed to save complaints to localStorage:', err);
+    console.error('Failed to save complaints to storage:', err);
   }
 }
 

@@ -1,5 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw, Trash2, Home } from 'lucide-react';
+import { safeLocalStorage, safeSessionStorage } from '../utils/safeStorage';
 
 interface Props {
   children: ReactNode;
@@ -36,8 +37,8 @@ export class ErrorBoundary extends Component<Props, State> {
 
   private handleResetCache = () => {
     try {
-      localStorage.clear();
-      sessionStorage.clear();
+      safeLocalStorage.clear();
+      safeSessionStorage.clear();
     } catch (e) {
       console.warn('Could not clear storage:', e);
     }

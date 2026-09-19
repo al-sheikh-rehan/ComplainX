@@ -22,6 +22,7 @@ import {
   LogOut,
 } from 'lucide-react';
 import { OfficialAccount, Complaint } from '../types';
+import { safeSessionStorage } from '../utils/safeStorage';
 import {
   firebaseConfig,
   subscribeToOfficials,
@@ -48,7 +49,7 @@ export const DeveloperConsoleModal: React.FC<DeveloperConsoleModalProps> = ({
 }) => {
   // Master Developer Auth State
   const [isDevAuthenticated, setIsDevAuthenticated] = useState<boolean>(() => {
-    return sessionStorage.getItem('complainx_dev_auth') === 'true';
+    return safeSessionStorage.getItem('complainx_dev_auth') === 'true';
   });
   const [inputEmail, setInputEmail] = useState(MASTER_DEV_EMAIL);
   const [inputPassword, setInputPassword] = useState('');
@@ -113,7 +114,7 @@ export const DeveloperConsoleModal: React.FC<DeveloperConsoleModalProps> = ({
       inputPassword === MASTER_DEV_PASS
     ) {
       setIsDevAuthenticated(true);
-      sessionStorage.setItem('complainx_dev_auth', 'true');
+      safeSessionStorage.setItem('complainx_dev_auth', 'true');
       if (onNotify) onNotify('Developer Console unlocked successfully');
     } else {
       setAuthError('Invalid Master Developer credentials. Only authorized administrator access permitted.');
@@ -122,7 +123,7 @@ export const DeveloperConsoleModal: React.FC<DeveloperConsoleModalProps> = ({
 
   const handleDevLogout = () => {
     setIsDevAuthenticated(false);
-    sessionStorage.removeItem('complainx_dev_auth');
+    safeSessionStorage.removeItem('complainx_dev_auth');
     setInputPassword('');
     if (onNotify) onNotify('Logged out from Developer Console');
   };
