@@ -5,6 +5,8 @@ import { defineConfig } from 'vite';
 
 export default defineConfig(() => {
   return {
+    // Use relative asset URLs so the app works on GitHub Pages at /ComplainX/.
+    base: './',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
